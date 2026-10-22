@@ -145,7 +145,7 @@ Unsafe GOTO in line 30:
 :_
 ```
 
-"Unsafe GOTO" will also be raised if you try to **GOTO into a stored program** from a direct command, like this:
+To break loops safely, see [below](#diversified-break).  "Unsafe GOTO" will also be raised if you try to **GOTO into a stored program** from a direct command, like this:
 
 ```
 :10 PRINT "Hello world!"
@@ -156,15 +156,13 @@ Unsafe GOTO:
 :_
 ```
 
-To break loops safely, see [below](#diversified-break)
-
 ### (Diversified) BREAK
 
 The BREAK keyword in RM Basic was **only used in the context of ON BREAK [ OFF ]** statements to set BREAK interrupt traps; **this will be supported in RM BasicXT** but the BREAK keyword by itself can also be used to **safely exit FOR and REPEAT loops** prematurely.
 
 To break a loop, the RM Basic manual recommends setting the control variable of the loop so the evaluation in the FOR or UNTIL statement will be FALSE, then making a GOTO to the end of the loop.  A side-effect of this was losing the value of the control variable when the loop was broken.  So naturally most people would just **GOTO directly out of the loop** which, as discussed earlier, **isn't great**.
 
-By **re-using the BREAK keyword** to "pop" the loop on demand we can **safely break away from loops**, much like in modern languages, and in a way that is far easier to read while **fitting perfectly to RM Basic's structured aesthetic**:
+By **re-using the BREAK keyword** to "pop" the loop on demand we can **safely break away from loops**, much like in modern languages, in a way that is far easier to read while **fitting perfectly to RM Basic's structured aesthetic**:
 
 ```
 :10 FOR I% := 1 TO 1000
@@ -188,7 +186,7 @@ It isn't slow.
 
 ## REPL
 
-This repo does not provide any emulation of the RM Nimbus sound, graphics or text features; it is purely for testing and developing the compiler.  A REPL has been provided that can be used to write and execute RM Basic programs and obtain debugging output but otherwise has very limited functionality.  Decompilation results are displayed after compilation and before execution is started.
+This repo does not provide any emulation of the RM Nimbus sound, graphics or text features; it is purely for testing and developing the compiler.  A REPL has been provided that can be used to write and execute programs and obtain debugging output but otherwise has very limited functionality.  Decompilation results are displayed after compilation and before execution is started.
 
 ### Key Features
 
@@ -246,7 +244,7 @@ Goodbye!
 
 ```
 :10 FUNCTION Adder%(A%, B%)
-:20   RESULT A% + B%
+:20 RESULT A% + B%
 :30 ENDFUN
 :
 :PRINT Adder%(10, 100)
