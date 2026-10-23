@@ -33,14 +33,13 @@ impl RandomState {
         }
     }
 
-    /// The RM Basic RND(e) function
     pub fn rnd(&mut self, e: f64) -> f64 {
         // Condition 1: e == 0 (Repeat last number)
         if e == 0.0 {
             return self.last_value;
         }
 
-        // Condition 2: e < 0 (Reseed the generator)
+        // Condition 2: e < 0 (Reseed)
         if e < 0.0 {
             // Convert the absolute value to a u64 to use as a deterministic seed
             let seed = e.abs().to_bits(); 
@@ -53,16 +52,12 @@ impl RandomState {
         let result = if magnitude > 1.0 {
             // Condition 3: magnitude > 1 (Integer from 1 to e)
             let upper_bound = magnitude.trunc() as u64;
-            
-            // NEW API: random_range instead of gen_range
             self.rng.random_range(1..=upper_bound) as f64
         } else {
             // Condition 4: magnitude between 0 and 1 (Float >= 0 and < 1)
-            // NEW API: random instead of gen
             self.rng.random::<f64>()
         };
 
-        // Store and return
         self.last_value = result;
         result
     }
@@ -199,7 +194,7 @@ pub struct VM {
     pub stack: Vec<Value>,
     pub globals: HashMap<String, Value>,
     pub global_arrays: HashMap<String, BasicArray>,
-    pub error_status: ErrorStatus, // <-- TODO: I think we have a bug here...if ON ERROR is set higher up the stack, when we pop the stack the jump is gone but the flag is still true.
+    pub error_status: ErrorStatus, 
     pub entry_ip: usize,
     pub call_stack: Vec<CallFrame>,
     pub callables: HashMap<String, Callable>,
@@ -296,7 +291,6 @@ impl VM {
         let idx = self.call_stack.len()-1;
         let (on_error, on_error_jump) = self.get_on_error_status();
         let updated_loop = Loop {
-            //on_error_jump: self.call_stack[idx].on_error_jump.clone(),
             loop_ip: lp.loop_ip,
             loop_type: lp.loop_type,
             loop_params: lp.loop_params,
@@ -426,8 +420,8 @@ impl VM {
         }
     }
 
-    /// Executes a chunk of bytecode. 
-    /// For this expression-only phase, we'll return the final Value left on the stack.
+    /// Executes a chunk of bytecode, but as we're bunging the entire program into a single chunk
+    /// it will execute the entire program.
     pub fn interpret(&mut self, compiler: &Compiler, error_status: &mut ErrorStatus) -> Value {
         let mut ip = self.entry_ip;
         self.call_stack.push(CallFrame { 
@@ -542,11 +536,9 @@ impl VM {
                                     local_arrays: HashMap::new(),
                                     globalized: HashSet::new(),
                                     procedure_call_receive_args: Vec::new(),
-                                    //on_error_jump: current_call_stack.on_error_jump.clone(),
                                     on_error_jump: on_error_jump,
                                     on_error: on_error
                                 });                               
-                                // jump
                                 ip = *jump_to_ip;
                                 continue
                             } else {
@@ -565,13 +557,6 @@ impl VM {
                     } else {
                         self.set_on_error_status(false, OnErrorJump { scope_depth:0, jump_to: 0 })
                     }
-                    //let idx = self.call_stack.len()-1;
-                    //if *v {
-                    //    self.on_error = true;
-                    //    self.call_stack[idx].on_error_jump = OnErrorJump { scope_depth: self.scope_depth(), jump_to: ip+1 };
-                    //} else {
-                    //    self.on_error = false
-                    //}
                 }
                 Opcode::Restore(line) => {
                     self.inline_data_pointer = 0;
@@ -726,7 +711,6 @@ impl VM {
                             _ => panic!("Unsupported callable type")
                         }
                         // push the call:
-                        //let current_call_stack = &self.call_stack[self.call_stack.len()-1];
                         let (on_error, on_error_jump) = self.get_on_error_status();
                         self.call_stack.push(CallFrame { 
                             caller_ip: ip,
@@ -927,7 +911,6 @@ impl VM {
                                     if error_status.error_type == ErrorType::Ok {
                                         if r {
                                             // Do nothing...?
-                                            // self.loop_stack.pop();
                                         } else {
                                             ip = lp.loop_ip;
                                             self.push_loop(lp);
@@ -1130,7 +1113,6 @@ impl VM {
                             if let Some(array) = current_array {
                                 if let Some(flat_idx) = array.calculate_flat_index(&indices) {
                                     // Type checking/casting:
-                                    // 1. Fetch item 0 and ...
                                     let test_item = &array.data[0];
                                     match value_to_assign {
                                         Value::Float(v) => {

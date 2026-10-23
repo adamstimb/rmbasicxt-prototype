@@ -37,10 +37,6 @@ fn main() {
             .expect("Failed to read line");
 
         let stmts = scan(&input);
-        //println!("Scanner returned these statements:");
-        //for (sequence, stmt) in stmts.iter().enumerate() {
-        //    println!("Statement #{}: {:#?}", sequence, stmt);
-        //}
         vm.handle_repl_input(stmts);
 
         // Handle shutdown signal

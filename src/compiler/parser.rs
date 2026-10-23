@@ -779,7 +779,6 @@ impl Parser {
             let arg = self.parse_expression(tokens, cursor, error_status);
             if error_status.error_type != ErrorType::Ok { return self.forward_parse_error(cursor, error_status) }
             vars.push(arg);
-            //*cursor += 1;
             if *cursor == tokens.len() { return Stmt::Read(vars) }
             // Require , before next arg
             if !self.check_type(TokenType::Comma, ErrorType::CommaSeparatorIsNeeded, tokens, cursor, error_status) {
@@ -901,14 +900,6 @@ impl Parser {
             }
             _ => return self.raise_error(ErrorType::GotoOrGosubIsMissing, cursor, error_status)
         }
-
-
-        //*cursor += 1;
-        //if *cursor == tokens.len() {
-        //    return Stmt::OnError(true)
-        //}
-        //if tokens[*cursor].token_type == TokenType::Off { return Stmt::OnError(false) }
-        //Stmt::OnError(true)
     }
 
     /// Entry point for statement parsing.
