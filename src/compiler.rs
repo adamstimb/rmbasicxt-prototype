@@ -74,7 +74,6 @@ pub fn decompile(chunk: Chunk, entry_ip: usize) {
         println!(" {} |  {:?}", idx, v);
     }
     println!("------------------------------------------");
-    //println!("{:?}", chunk.program_location_to_ip);
 }
 
 impl Compiler {
@@ -481,9 +480,7 @@ impl Compiler {
                         Expr::ArrayAccess { name, subscripts } => {
                             for subscript in subscripts {
                                 self.compile_expression(subscript, error_status);
-                                // TODO: error check
-                            }
-                            // TODO: error check                
+                            }             
                             let name_val = Value::String(name.value.clone()); 
                             let name_idx = self.chunk.add_constant(name_val);
                             self.chunk.write_opcode(self.line_number, self.statement_number, Opcode::Read);
@@ -769,7 +766,6 @@ impl Compiler {
                     error_status.error_type = ErrorType::VariableNameIsNeeded 
                 }
             }
-            //_ => error_status.error_type = ErrorType::UnknownCommandProcedure
         }
     }
 

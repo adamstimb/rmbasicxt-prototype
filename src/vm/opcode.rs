@@ -55,8 +55,6 @@ pub enum Opcode {
 pub struct Chunk {
     pub code: Vec<(usize, usize, Opcode)>, // line_number, statement_number, OpCode
     pub constants: Vec<Value>,
-    //pub data_bank: Vec<Value>,       // Pooled values from all DATA statements
-    //pub line_offsets: HashMap<usize, usize>, // Maps BASIC Line Numbers -> Code Indices
     pub program_location_to_ip: FxHashMap<(u32, u32), usize>,
 }
 

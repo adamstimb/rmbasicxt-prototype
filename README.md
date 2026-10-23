@@ -43,7 +43,7 @@ RM Basic enabled the user to **trap errors** and execute **alternative code** in
 
 ### IF _expression_ THEN _statements_ [ ELSE _statements_ ]
 
-IF statements are implemented according to RM Basic such that **THEN is required** before the statements to be run.  It turns out there was an undocumented nuance in the original language that made THEN _optional_.  This would raise absolute hell in a compiled language and so RM BasicXT implementes IF THEN ELSE as originally documented: THEN is required.  
+IF statements are implemented according to RM Basic such that **THEN is required** before the statements to be run.  It turns out there was an undocumented nuance in the original language that made THEN _optional_.  This would raise absolute hell in a compiled language and so RM BasicXT implements IF THEN ELSE as originally documented: THEN is required.  
 
 ### RUN
 
